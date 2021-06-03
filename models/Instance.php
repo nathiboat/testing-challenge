@@ -9,5 +9,6 @@ class Instance
 
     public function time()
     {
+        return $this->data['datetime'];
     }
 }

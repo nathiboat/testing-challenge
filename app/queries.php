@@ -1,7 +1,12 @@
 <?php
 
+
 class Events
 {
+    
+    public static function today() {
+        return date("Y-m-d");
+    }
 
     /**
      * This method should only return events where at least one of their instances
@@ -11,7 +16,19 @@ class Events
      */
     public static function inFuture(): array
     {
-        return [];
+        $futureEvents = [];
+        $lsitEvents = self::eventsData();
+        
+        foreach ($lsitEvents  as $event) {
+
+            foreach ($event['instances'] as $showTime){
+                if($showTime['datetime'] > self::today()){
+                    $futureEvents[] = $event;
+                }
+            }            
+        }
+
+        return $futureEvents;
     }
 
     /**
@@ -22,7 +39,20 @@ class Events
      */
     public static function inPast(): array
     {
-        return [];
+
+        $passEvents = [];
+        $lsitEvents = self::eventsData();
+        
+        foreach ($lsitEvents  as $event) {
+
+            foreach ($event['instances'] as $showTime){
+                if($showTime['datetime'] < self::today()){
+                    $passEvents[] = $event;
+                }
+            }            
+        }
+
+        return $passEvents;
     }
 
     /**
@@ -31,9 +61,11 @@ class Events
      * The array should contain Event objects
      * @return array
      */
-    public static function atVenue()
+    public static function atVenue($venueId)
     {
-        return [];
+        $venues = self::venuesData();
+
+        return $venues[$venueId] ;
     }
 
     /**
@@ -43,6 +75,20 @@ class Events
     protected static function eventsData(): array
     {
         $data = include ROOT_PATH . 'data/events.php';
+        # shuffle is used to a mock the fact that the database/API won't always
+        # return results in an expected order (depending or the query of course).
+        shuffle($data);
+        return $data;
+    }
+
+
+     /**
+     * This method is to mock a database/api call.
+     * @return array
+     */
+    protected static function venuesData(): array
+    {
+        $data = include ROOT_PATH . 'data/venues.php';
         # shuffle is used to a mock the fact that the database/API won't always
         # return results in an expected order (depending or the query of course).
         shuffle($data);
